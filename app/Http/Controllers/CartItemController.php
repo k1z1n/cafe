@@ -62,14 +62,16 @@ class CartItemController extends Controller
                 $cartItem->quantity--;
             } else {
                 $cartItem->delete();
-                return redirect()->route('cart');
+                return response()->json(['success' => true, 'quantity' => 0]);
             }
 
             $cartItem->save();
+            return response()->json(['success' => true, 'quantity' => $cartItem->quantity]);
         }
 
-        return redirect()->route('cart');
+        return response()->json(['success' => false]);
     }
+
     public function updatePaymentMethod(Request $request)
     {
         // Получаем текущего пользователя

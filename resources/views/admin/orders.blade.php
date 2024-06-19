@@ -2,7 +2,7 @@
 @section('content')
     <div class="container mt-3">
         <div id="users" class="page">
-            <h1 class="text-3xl font-bold my-6">Товары корзины</h1>
+            <h1 class="text-3xl font-bold my-6">Заказы</h1>
             @if(session('success'))
                 <div class="text-green-600 my-4">
                     {{ session('success') }}

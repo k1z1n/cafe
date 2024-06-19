@@ -4,10 +4,8 @@
 @endsection
 @section('content')
     @include('map.map')
-
     <div class="container">
         <h1 class="text-3xl font-bold mt-8 mb-6">Корзина</h1>
-
         @if($cartItems->isEmpty())
             <div class="flex flex-col items-center justify-center h-full">
                 <p class="text-gray-600">Ваша корзина пуста.</p>
@@ -34,24 +32,24 @@
                                 ₽
                             </div>
                             <div class="flex justify-center">
-                                <form action="{{ route('cart.update', $item->id) }}" method="post"
-                                      class="flex items-center">
+                                <form id="cart-form-{{ $item->id }}" class="flex items-center">
                                     @csrf
                                     @method('PATCH')
-                                    <button type="submit" name="action" value="decrement"
-                                            class="border-r-2 border-black border-opacity-5 bg-[#F9F9FB] p-2 rounded-l-md">
+                                    <button type="button" name="action" value="decrement" data-id="{{ $item->id }}"
+                                            class="border-r-2 border-black border-opacity-5 bg-[#F9F9FB] p-2 rounded-l-md cart-update">
                                         -
                                     </button>
-                                    <div
-                                        class="text-[#A3A3A3] bg-[#F9F9FB] w-full py-2 px-5">{{ $item->quantity }}</div>
-                                    <button type="submit" name="action" value="increment"
-                                            class="border-l-2 border-black border-opacity-5 bg-[#F9F9FB] p-2 rounded-r-md">
+                                    <div id="quantity-{{ $item->id }}" class="text-[#A3A3A3] bg-[#F9F9FB] w-full py-2 px-5">
+                                        {{ $item->quantity }}
+                                    </div>
+                                    <button type="button" name="action" value="increment" data-id="{{ $item->id }}"
+                                            class="border-l-2 border-black border-opacity-5 bg-[#F9F9FB] p-2 rounded-r-md cart-update">
                                         +
                                     </button>
                                 </form>
                             </div>
                             <div class="flex justify-center items-center text-xl text-black">
-                                {{ $item->quantity * $item->product->price }} ₽
+                                {{ number_format( $item->quantity * $item->product->price, 0, ',', ' ') }} ₽
                             </div>
                         </div>
                         <div class="absolute right-[-10px] top-[-10px]">
@@ -67,9 +65,9 @@
             </div>
             <div class="w-full mt-5 flex gap-4 mb-12 lg:flex-row xs:flex-col ">
                 <div class="lg:w-1/3 xs:w-full shadow-custom px-4 py-3.5 bg-white rounded-2xl">
-                    <div class="flex justify-between">
+                    <div class="flex justify-between items-center">
                         <div>Итого к оплате:</div>
-                        <div id="totalPrice" class="font-semibold text-xl">{{ $total }} ₽</div>
+                        <div id="totalPrice" class="font-semibold text-2xl">{{ $total }} ₽</div>
                     </div>
                     <div>
                         <div class="text-xs my-2 text-gray-500">Можно оплатить баллами не более 30% заказа</div>
@@ -82,11 +80,9 @@
                         <div class="w-12 text-sm text-right">{{ min(auth()->user()->scores, intval($total * 0.3)) }}</div>
                     </div>
                 </div>
-
                 <script>
                     // Сохраняем изначальную итоговую сумму заказа
                     const initialTotal = parseFloat(document.getElementById('totalPrice').innerText);
-
                     function updatePointsValue() {
                         const rangeInput = document.getElementById('pointsRange');
                         const currentValue = parseInt(rangeInput.value);
@@ -98,7 +94,6 @@
                         document.getElementById('totalPrice').innerText = remainingPrice.toFixed(0) + ' ₽';
                     }
                 </script>
-
                 <div class="lg:w-1/3 xs:w-full shadow-custom px-4 py-3.5 bg-white rounded-2xl max-h-64">
                     <div class="text-blue-600 cursor-pointer" id="createMap">Добавить адрес +</div>
                     <div class="max-h-[6.25rem] overflow-y-auto mt-4 h-full">
@@ -121,7 +116,6 @@
                 <script>
                     // Получаем все радиокнопки
                     let radioButtons = document.querySelectorAll('.address-radio');
-
                     // Добавляем обработчик событий на изменение состояния каждой радиокнопки
                     radioButtons.forEach(function (radio) {
                         radio.addEventListener('change', function () {
@@ -155,7 +149,6 @@
                             <button type="submit" class="w-full py-2 mt-2 bg-[#3a86ff] rounded-xl text-white">Оформить заказ</button>
                         </form>
                     @endif
-
                     <script>
                         let cash = document.getElementById('cash-lab')
                         let card = document.getElementById('card-lab')
@@ -163,12 +156,10 @@
                             cash.classList.add('border-blue-500');
                             card.classList.remove('border-blue-500');
                         });
-
                         card.addEventListener('click', function () {
                             cash.classList.remove('border-blue-500');
                             card.classList.add('border-blue-500');
                         });
-
                         function updatePaymentMethod(method) {
                             fetch('/update-payment-method', {
                                 method: 'POST',
@@ -207,4 +198,40 @@
             </div>
         @endif
     </div>
+    <script defer>
+        document.querySelectorAll('.cart-update').forEach(button => {
+            button.addEventListener('click', function() {
+                const action = this.getAttribute('value');
+                const itemId = this.getAttribute('data-id');
+                const form = document.getElementById('cart-form-' + itemId);
+                const token = form.querySelector('[name=_token]').value;
+                const method = form.querySelector('[name=_method]').value;
+
+                fetch('/cart/' + itemId, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': token,
+                        'X-HTTP-Method-Override': method
+                    },
+                    body: JSON.stringify({ action: action })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            const quantityDiv = document.getElementById('quantity-' + itemId);
+                            if (data.quantity > 0) {
+                                quantityDiv.textContent = data.quantity;
+                            } else {
+                                form.remove();
+                            }
+                        } else {
+                            alert('Failed to update cart');
+                        }
+                    })
+                    .catch(error => console.error('Error:', error));
+            });
+        });
+
+    </script>
 @endsection

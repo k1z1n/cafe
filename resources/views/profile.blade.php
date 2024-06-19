@@ -8,8 +8,8 @@
         <div class="flex gap-5 mt-5 lg:flex-row xs:flex-col">
             <div class="flex flex-col lg:w-1/3 md:w-full">
                 <div class="bg-white rounded-2xl shadow-custom px-4 py-5 flex flex-col relative">
-                    <div class="absolute top-4 right-4 cursor-pointer" id="createUpdateProfile">
-                        <img src="{{ asset('img/update-profile.svg') }}" alt="">
+                    <div class="absolute top-4 right-4 cursor-pointer z-10" id="createUpdateProfile">
+                        <img src="{{ asset('img/update-profile.svg') }}" alt="" class="w-7">
                     </div>
                     <div class="flex justify-center items-center mb-4">
                         <div class="bg-blue-600 w-16 h-16 rounded-full flex justify-center items-center">
@@ -19,39 +19,105 @@
                     <div class="flex flex-row mt-4 items-center justify-between">
                         <div class="text-gray-500">Имя</div>
                         @if($user->username)
-                            <div class="text-gray-700">{{ $user->username }}</div>
+                            <div class="text-gray-700  text-lg">{{ $user->username }}</div>
                         @else
-                            <div class="text-gray-700">Имя не указано</div>
+                            <div class="text-gray-700  text-lg">Имя не указано</div>
                         @endif
                     </div>
                     <div class="flex flex-row mt-2 items-center justify-between">
                         <div class="text-gray-500">Телефон</div>
-                        <div class="text-gray-700">+7{{ $user->phone_number }}</div>
+                        <div class="text-gray-700  text-lg">+7{{ $user->phone_number }}</div>
                     </div>
                     <div class="flex flex-row mt-2 items-center justify-between">
                         <div class="text-gray-500">Email</div>
                         @if($user->email)
-                            <div class="text-gray-700">{{ $user->email }}</div>
+                            <div class="text-gray-700  text-lg">{{ $user->email }}</div>
                         @else
-                            <div class="text-gray-700">Email не указан</div>
+                            <div class="text-gray-700  text-lg">Email не указан</div>
                         @endif
                     </div>
                     <div class="flex flex-row mt-2 items-center justify-between">
                         <div class="text-gray-500">Дата рождения</div>
                         @if($user->date)
-                            <div class="text-gray-700">{{$user->date}}</div>
+                            <div class="text-gray-700  text-lg">{{$user->formatted_date}}</div>
                         @else
-                            <div class="text-gray-700">Дата не указана</div>
+                            <div class="text-gray-700  text-lg">Дата не указана</div>
                         @endif
                     </div>
                 </div>
                 <div class="mt-4">
                     <form action="{{ route('logout') }}" method="post">
                         @csrf
-                        <button type="submit" class="py-2 px-8 bg-blue-900 rounded-xl text-white">Выйти</button>
+                        <button type="submit" class="py-2 px-8 bg-[#3a86ff] rounded-xl text-white">Выйти</button>
                     </form>
                 </div>
             </div>
+{{--            <div id="addressModal" class=" fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">--}}
+{{--                <div class="bg-white rounded-2xl shadow-custom px-4 py-5 flex flex-col w-full max-w-[400px]">--}}
+{{--                    <div class="flex justify-end">--}}
+{{--                        <button id="closeAddressModal" class="text-gray-500">&times;</button>--}}
+{{--                    </div>--}}
+{{--                    <form method="post" action="{{ route('address.add') }}" class="">--}}
+{{--                        @csrf--}}
+{{--                        <div class="flex flex-col mb-4">--}}
+{{--                            <label for="deliveryAddress" class="block text-gray-700 text-sm font-bold mb-2">Адрес доставки</label>--}}
+{{--                            <input type="text" class="input-custom" id="deliveryAddress" name="address" placeholder="Введите адрес доставки">--}}
+{{--                        </div>--}}
+{{--                        <div class="flex gap-3">--}}
+{{--                            <div class="mb-4">--}}
+{{--                                <label for="entrance" class="block text-gray-700 text-sm font-bold mb-2">Подъезд</label>--}}
+{{--                                <input type="text" class="input-custom" id="entrance" name="entrance" placeholder="Введите подъезд">--}}
+{{--                            </div>--}}
+{{--                            <div class="mb-4">--}}
+{{--                                <label for="intercom_code" class="block text-gray-700 text-sm font-bold mb-2">Код домофона</label>--}}
+{{--                                <input type="text" class="input-custom" id="intercom_code" name="intercom_code" placeholder="Введите код домофона">--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
+{{--                        <div class="flex gap-3">--}}
+{{--                            <div class="mb-4">--}}
+{{--                                <label for="floor" class="block text-gray-700 text-sm font-bold mb-2">Этаж</label>--}}
+{{--                                <input type="text" class="input-custom" id="floor" name="floor" placeholder="Введите этаж">--}}
+{{--                            </div>--}}
+{{--                            <div class="mb-4">--}}
+{{--                                <label for="apartment" class="block text-gray-700 text-sm font-bold mb-2">Номер квартиры</label>--}}
+{{--                                <input type="text" class="input-custom" id="apartment" name="apartment" placeholder="Введите номер квартиры">--}}
+{{--                            </div>--}}
+{{--                        </div>--}}
+{{--                        <div class="flex flex-col mb-4">--}}
+{{--                            <label for="comments" class="block text-gray-700 text-sm font-bold mb-2">Комментарий к заказу</label>--}}
+{{--                            <textarea type="text" class="input-custom" id="comments" name="comments" placeholder="Введите описание продукта"></textarea>--}}
+{{--                        </div>--}}
+{{--                        <div class="w-full">--}}
+{{--                            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-xl focus:outline-none focus:shadow-outline">--}}
+{{--                                Изменить--}}
+{{--                            </button>--}}
+{{--                        </div>--}}
+{{--                    </form>--}}
+{{--                </div>--}}
+{{--            </div>--}}
+{{--            <div id="updateProfileModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 flex justify-center items-center">--}}
+{{--                <div class="bg-white rounded-2xl shadow-custom px-4 py-5 w-full max-w-[320px] flex flex-col">--}}
+{{--                    <div class="flex justify-end">--}}
+{{--                        <button id="closeModal" class="text-gray-500">&times;</button>--}}
+{{--                    </div>--}}
+{{--                    <form action="" method="post" class="flex flex-col space-y-4">--}}
+{{--                        @csrf--}}
+{{--                        <div class="flex flex-col">--}}
+{{--                            <label for="username" class="text-gray-500">Имя</label>--}}
+{{--                            <input type="text" id="username" name="username" value="{{ $user->username }}" class="border rounded p-2">--}}
+{{--                        </div>--}}
+{{--                        <div class="flex flex-col">--}}
+{{--                            <label for="email" class="text-gray-500">Email</label>--}}
+{{--                            <input type="email" id="email" name="email" value="{{ $user->email }}" class="border rounded p-2">--}}
+{{--                        </div>--}}
+{{--                        <div class="flex flex-col">--}}
+{{--                            <label for="date" class="text-gray-500">Дата рождения</label>--}}
+{{--                            <input type="date" id="date" name="date" value="{{ $user->date }}" class="border rounded p-2">--}}
+{{--                        </div>--}}
+{{--                        <button type="submit" class="py-2 px-8 bg-[#3a86ff] rounded-xl text-white">Сохранить</button>--}}
+{{--                    </form>--}}
+{{--                </div>--}}
+{{--            </div>--}}
             <div class="flex flex-col lg:w-2/3 md:w-full gap-4 mb-12">
                 <div class="shadow-custom px-4 py-3.5 bg-white rounded-2xl">
                     <div class="text-xl">Ваши баллы: <span class="text-blue-900 font-semibold">{{ auth()->user()->scores }} Б</span>

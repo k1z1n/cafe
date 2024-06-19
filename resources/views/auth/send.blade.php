@@ -19,19 +19,17 @@
             <div id="errorMessage"></div>
         </form>
         <div>
-            <div class="text-[10px] pt-2 text-center">
+            <div class= "text-[10px] pt-2 text-center">
                 Продолжая, вы соглашаетесь
                 <a href="" download="public/file/pass.doc" class="ml-1 text-blue-600">со сбором и обработкой персональных данных и пользовательским соглашением</a>
             </div>
         </div>
     </div>
 </div>
-
 <script>
     window.addEventListener("DOMContentLoaded", function () {
         [].forEach.call(document.querySelectorAll('.tel'), function (input) {
             var keyCode;
-
             function mask(event) {
                 event.keyCode && (keyCode = event.keyCode);
                 var pos = this.selectionStart;
@@ -55,15 +53,12 @@
                 reg = new RegExp("^" + reg + "$");
                 if (!reg.test(this.value) || this.value.length < 5 || keyCode > 47 && keyCode < 58) this.value = new_value;
                 if (event.type === "blur" && this.value.length < 5) this.value = "";
-
                 // Check if the phone number is complete
                 var isComplete = this.value.replace(/\D/g, '').length === 11;
                 var sendSmsButton = document.getElementById('sendSms');
-
                 // Update the button's disabled state and background color
                 sendSmsButton.disabled = !isComplete;
                 sendSmsButton.style.backgroundColor = isComplete ? 'rgb(59, 130, 246)' : 'rgb(226, 232, 240)'; // Original button color is 'rgb(59, 130, 246)'
-
                 // Remove the country code and format the phone number
                 if (isComplete) {
                     var formattedNumber = this.value.replace(/\D/g, '').slice(1);
@@ -72,7 +67,6 @@
                     console.log(formattedNumber)
                 }
             }
-
             input.addEventListener("input", mask, false);
             input.addEventListener("focus", mask, false);
             input.addEventListener("blur", mask, false);

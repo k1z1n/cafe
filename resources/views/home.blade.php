@@ -29,13 +29,32 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var swiper = new Swiper('.swiper-container', {
-                slidesPerView: 1,
+                slidesPerView: 2,
                 spaceBetween: 10,
                 loop: true,
                 autoplay: {
                     delay: 2500,
                     disableOnInteraction: false,
                 },
+                breakpoints: {
+                    200:{
+                        slidesPerView: 1,
+                    },
+                    // когда ширина окна превышает 640px
+                    640: {
+                        slidesPerView: 1,
+                        spaceBetween: 20
+                    },
+                    // когда ширина окна превышает 768px
+                    768: {
+                        slidesPerView: 1,
+                        spaceBetween: 30
+                    },
+                    1024:{
+                        slidesPerView: 2
+                    }
+                    // и т.д.
+                }
             });
         });
     </script>
@@ -145,22 +164,26 @@
                 <div class="grid lg:grid-cols-4 sm:grid-cols-3 xs:grid-cols-1 gap-y-6 gap-x-8 mb-14">
                     @foreach ($cat->products as $product)
                         <div id="product-{{$product->id }}"
-                            class="flex flex-col h-full justify-between p-4 shadow-custom bg-white rounded-3xl btn-show-product hover:scale-[1.05] duration-200"
+                            class="flex xs:flex-row sm:flex-col h-full justify-between sm:p-4 xs:p-2 shadow-custom bg-white rounded-3xl btn-show-product hover:scale-[1.05] duration-200"
                             data-product-id="{{ $product->id }}">
                             <div class="w-full">
-                                <img class="mb-4 h-auto w-full object-cover rounded-xl"
+                                <img class="sm:mb-4 h-auto w-auto object-cover rounded-xl"
                                      src="{{ asset('storage/imgss/'.$product->image_path) }}"
                                      alt="">
-                                <h3 class="text-xl text-[#333333] font-bold block">{{ $product->title }}</h3>
-                                <p class="text-gray-600 block text-sm mt-2">{{ $product->structure }}</p>
+                                <h3 class="sm:block xs:hidden text-xl text-[#333333] font-bold block">{{ $product->title }}</h3>
+                                <p class="sm:block xs:hidden text-gray-600 block text-sm mt-2">{{ $product->structure }}</p>
                             </div>
-                            <div class="w-full flex justify-between items-center mt-4">
-                                <p class="text-black font-bold text-base">{{ $product->price }} ₽</p>
+                            <div class="w-full flex sm:flex-row xs:flex-col sm:justify-between xs:justify-center sm:items-center xs:items-start sm:mt-4 xs:mt-1">
+                                <h3 class="sm:hidden xs:block sm:text-xl xs:text-xs text-[#333333] font-bold block">{{ $product->title }}</h3>
+                                <p class="sm:hidden xs:block text-gray-600 block sm:text-sm xs:text-xs sm:mt-2 xs:mt-1.5">{{ $product->structure }}</p>
+                                <p class="text-black font-bold text-base sm:block xs:hidden">{{ $product->price }} ₽</p>
                                 <form action="{{ route('cart.add') }}" method="post" class="flex items-center">
                                     @csrf
                                     <input type="hidden" name="product_id" value="{{ $product->id }}">
-                                    <input type="submit" class="w-full py-2 px-5 bg-[#3a86ff] rounded-3xl text-white"
+                                    <input type="submit" class="sm:block xs:hidden w-full py-2 px-5 bg-[#3a86ff] rounded-3xl text-white"
                                            value="в корзину">
+                                    <input type="submit" class="xs:mt-2 sm:text-sm xs:text-xs sm:hidden xs:block w-full py-2 px-5 bg-[#3a86ff] rounded-3xl text-white"
+                                           value="{{ $product->price }} ₽">
                                 </form>
                             </div>
                         </div>
@@ -175,8 +198,8 @@
                     <div class="absolute right-[-10px] top-[-10px] bg-red-600 rounded-full p-0.5 cursor-pointer" id="closeModal">
                         <img src="{{ asset('img/delete.svg') }}" alt="">
                     </div>
-                    <div class="w-1/2 xs:flex xs:justify-center xs:w-full bg-[#FCFCFC] md:rounded-l-3xl xs:rounded-l-none text-center">
-                        <img src="" class="modal-product-img h-[26.5rem] w-full xs:w-[28rem] p-8 object-cover rounded-l-2xl"
+                    <div class="w-1/2 xs:flex xs:justify-center xs:w-full bg-[#FCFCFC] md:rounded-l-3xl xs:rounded-l-none text-center border-r-2 border-gray-300">
+                        <img src="" class="modal-product-img h-[20rem] w-full xs:w-[20rem] p-8 object-cover rounded-l-2xl"
                              alt="Product Image">
                     </div>
                     <div class="p-4 w-1/2 xs:w-full flex flex-col bg-[#FCFCFC] justify-between md:rounded-r-2xl xs:rounded-r-none">
@@ -202,21 +225,16 @@
                 </div>
             </div>
         </div>
-
-
         <script>
             // Получаем все элементы товаров
             let productCards = document.querySelectorAll('.btn-show-product');
-
             // Получаем ссылку на модальное окно
             let modal = document.getElementById('productModal');
-
             // Добавляем обработчик события клика на каждый товар
             productCards.forEach(function (productCard) {
                 productCard.addEventListener('click', function () {
                     // Получаем уникальный идентификатор товара из data-атрибута
                     let productId = productCard.getAttribute('data-product-id');
-
                     // Отправляем AJAX-запрос на сервер, чтобы получить данные о товаре по его идентификатору
                     fetch(`/products/${productId}`)
                         .then(response => response.json())
@@ -241,19 +259,16 @@
                         });
                 });
             });
-
             // Добавляем обработчик события клика для закрытия модального окна
             document.getElementById('closeModal').addEventListener('click', function () {
                 modal.classList.add('hidden');
             });
-
             // Закрываем модальное окно, если пользователь нажимает вне его области
             modal.addEventListener('click', function (event) {
                 if (event.target === this) {
                     this.classList.add('hidden');
                 }
             });
-
             const productModal = document.getElementById('productModal');
             const productArea = document.querySelector('.modal-product');
 
@@ -270,10 +285,8 @@
         document.querySelectorAll('.category-link').forEach(anchor => {
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
-
                 const targetId = this.getAttribute('href').substring(1);
                 const targetElement = document.getElementById(targetId);
-
                 window.scrollTo({
                     top: targetElement.offsetTop - document.querySelector('.categories').offsetHeight,
                     behavior: 'smooth'
@@ -282,27 +295,20 @@
         });
         document.addEventListener('scroll', function () {
             const scrollPosition = window.scrollY;
-
             let maxVisibleArea = 0;
             let activeCategory = null;
-
             document.querySelectorAll('.category').forEach(category => {
                 const targetId = category.querySelector('.category-link').getAttribute('href').substring(1);
                 const targetElement = document.getElementById(targetId);
-
                 const headerHeight = document.querySelector('.categories').offsetHeight;
-
                 const blockTop = targetElement.offsetTop - headerHeight;
                 const blockBottom = blockTop + targetElement.offsetHeight;
-
                 const visibleArea = Math.min(blockBottom, scrollPosition + window.innerHeight) - Math.max(blockTop, scrollPosition);
-
                 if (visibleArea > maxVisibleArea) {
                     maxVisibleArea = visibleArea;
                     activeCategory = targetElement;
                 }
             });
-
             document.querySelectorAll('.category').forEach(category => {
                 category.classList.remove('active');
             });
@@ -310,7 +316,5 @@
                 activeCategory.closest('.category').classList.add('active');
             }
         });
-
     </script>
-
 @endsection
